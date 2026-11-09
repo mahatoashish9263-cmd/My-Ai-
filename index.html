@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Taskora AI - Pro Video Editor</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #111827; }
+    ::-webkit-scrollbar-thumb { background: #374151; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 font-sans h-screen flex flex-col overflow-hidden">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="h-14 border-b border-gray-800 bg-gray-900/80 backdrop-blur px-5 flex items-center justify-between shrink-0">
+    <div class="flex items-center space-x-3">
+      <div class="h-8 w-8 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20">
+        T
+      </div>
+      <span class="font-bold text-lg tracking-wider text-white">TASKORA <span class="text-cyan-400 text-xs px-2 py-0.5 rounded bg-cyan-950 border border-cyan-800">AI PRO</span></span>
+    </div>
+    <div class="flex items-center space-x-4 text-sm text-gray-400">
+      <span class="flex items-center gap-1.5"><span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span> Engine Ready</span>
+      <button class="px-3.5 py-1.5 rounded-md bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs transition flex items-center gap-2">
+        <i class="fa-solid fa-cloud-arrow-up"></i> Export Video
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN 3-COLUMN WORKSPACE -->
+  <main class="flex-1 grid grid-cols-12 gap-0 overflow-hidden">
+
+    <!-- 1. LEFT SIDE: CHATBOT INTERFACE (4 Cols) -->
+    <section class="col-span-4 border-r border-gray-800 bg-gray-900/40 flex flex-col h-full">
+      
+      <!-- Chat Header -->
+      <div class="p-3.5 border-b border-gray-800 flex items-center justify-between bg-gray-900/60">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-cyan-400 text-sm"></i>
+          <span class="font-medium text-sm text-gray-200">AI Editing Prompt Engine</span>
+        </div>
+        <button class="text-xs text-gray-400 hover:text-white transition" onclick="clearChat()">
+          <i class="fa-solid fa-rotate-right"></i> Reset
+        </button>
+      </div>
+
+      <!-- Chat Scrollable Message Body -->
+      <div id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-4 text-sm">
+        
+        <!-- Taskora Initial Greeting Message -->
+        <div class="flex gap-3">
+          <div class="h-8 w-8 rounded-full bg-cyan-600 flex items-center justify-center text-xs shrink-0 font-bold">
+            AI
+          </div>
+          <div class="space-y-3 max-w-[85%]">
+            <div class="bg-gray-800/90 border border-gray-700/70 p-3.5 rounded-2xl rounded-tl-sm text-gray-200 leading-relaxed shadow-sm">
+              <p class="font-semibold text-cyan-400 mb-1">👋 Welcome to Taskora!</p>
+              <p class="text-xs text-gray-300">
+                Main aapka AI Video Editor hu. Aap apne raw footage ke baare me batayein aur instruction dein—cuts, trims, cinematic color grading, edge-glow effects, dynamic subtitles, ya background audio mixing. Jo bologe, wahi PC-level precision ke saath edit ho jayega.
+              </p>
+              <p class="text-xs text-gray-400 mt-2">Bataiye, aaj hum kya edit karne wale hain?</p>
+            </div>
+
+            <!-- Quick Action Action Chips -->
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              <button onclick="sendQuickPrompt('Auto-cut silence and jump cuts lagao')" class="text-xs bg-gray-800 hover:bg-cyan-950 hover:text-cyan-400 border border-gray-700 hover:border-cyan-700 px-2.5 py-1 rounded-full transition">✂️ Auto-Cut Silence</button>
+              <button onclick="sendQuickPrompt('Cinematic dark teal-orange color grading aur sharpness boost karo')" class="text-xs bg-gray-800 hover:bg-cyan-950 hover:text-cyan-400 border border-gray-700 hover:border-cyan-700 px-2.5 py-1 rounded-full transition">🎨 Dark Cinematic</button>
+              <button onclick="sendQuickPrompt('Edges par intense neon glow filter add karo')" class="text-xs bg-gray-800 hover:bg-cyan-950 hover:text-cyan-400 border border-gray-700 hover:border-cyan-700 px-2.5 py-1 rounded-full transition">✨ Edge Glow</button>
+              <button onclick="sendQuickPrompt('Auto captions generate karo bold pop effect ke sath')" class="text-xs bg-gray-800 hover:bg-cyan-950 hover:text-cyan-400 border border-gray-700 hover:border-cyan-700 px-2.5 py-1 rounded-full transition">📝 Auto Captions</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Chat Input Area -->
+      <div class="p-3 border-t border-gray-800 bg-gray-900/80">
+        <form id="chat-form" onsubmit="handleChatSubmit(event)" class="relative flex items-center">
+          <input 
+            type="text" 
+            id="user-input" 
+            placeholder="E.g. Cut first 5s, add edge glow & dramatic bass..." 
+            class="w-full bg-gray-950 text-sm text-gray-100 placeholder-gray-500 rounded-xl pl-4 pr-12 py-3 border border-gray-800 focus:outline-none focus:border-cyan-500 transition"
+            autocomplete="off"
+          />
+          <button type="submit" class="absolute right-2.5 h-8 w-8 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white flex items-center justify-center transition shadow-md shadow-cyan-600/30">
+            <i class="fa-solid fa-arrow-up text-xs"></i>
+          </button>
+        </form>
+        <span class="text-[11px] text-gray-500 block text-center mt-2">PC-Level FFmpeg & MoviePy Rendering Active</span>
+      </div>
+    </section>
+
+    <!-- 2. CENTER: VIDEO PREVIEW & CONTROLS (5 Cols) -->
+    <section class="col-span-5 bg-black flex flex-col justify-between p-4 border-r border-gray-800">
+      
+      <!-- Video Status Header -->
+      <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-video text-cyan-400"></i> Project_Sequence_01.mp4</span>
+        <span class="px-2 py-0.5 rounded bg-gray-800 border border-gray-700">1080p | 60 FPS</span>
+      </div>
+
+      <!-- Video Player Canvas View -->
+      <div class="flex-1 flex items-center justify-center relative bg-gray-950/80 rounded-xl border border-gray-800 overflow-hidden group">
+        <video id="preview-video" class="w-full h-full object-contain" poster="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=1200&q=80">
+          <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+        </video>
+        
+        <!-- Video Overlay Overlay Buttons -->
+        <div class="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 group-hover:opacity-100 transition">
+          <button onclick="togglePlay()" class="h-14 w-14 rounded-full bg-cyan-500/90 hover:bg-cyan-400 text-white flex items-center justify-center shadow-lg transition transform hover:scale-110">
+            <i id="play-icon" class="fa-solid fa-play text-lg ml-0.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Timeline & Editing Controls Deck -->
+      <div class="mt-4 bg-gray-900/90 border border-gray-800 rounded-xl p-3 space-y-2">
+        <div class="flex items-center justify-between text-xs font-mono text-gray-400">
+          <span>00:14:22</span>
+          <div class="space-x-3 text-base">
+            <button class="hover:text-cyan-400 transition"><i class="fa-solid fa-backward-step"></i></button>
+            <button onclick="togglePlay()" class="hover:text-cyan-400 transition"><i class="fa-solid fa-play"></i></button>
+            <button class="hover:text-cyan-400 transition"><i class="fa-solid fa-forward-step"></i></button>
+          </div>
+          <span>01:00:00</span>
+        </div>
+        
+        <!-- Timeline Bar -->
+        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden cursor-pointer">
+          <div class="bg-cyan-500 h-full w-1/4 rounded-full"></div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1 text-xs text-gray-400">
+          <div class="flex gap-2">
+            <button class="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-[11px]"><i class="fa-solid fa-scissors"></i> Split</button>
+            <button class="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-[11px]"><i class="fa-solid fa-volume-high"></i> Audio Duck</button>
+            <button class="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-[11px]"><i class="fa-solid fa-sliders"></i> Color</button>
+          </div>
+          <span class="text-cyan-400 font-semibold">9:16 Shorts Mode</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. RIGHT SIDE: PROFILE & PROJECT SETTINGS (3 Cols) -->
+    <section class="col-span-3 bg-gray-900/60 p-4 flex flex-col justify-between overflow-y-auto">
+      
+      <div class="space-y-6">
+        <!-- User Profile Card -->
+        <div class="flex items-center gap-3 p-3 bg-gray-900 border border-gray-800 rounded-xl shadow-sm">
+          <div class="h-11 w-11 rounded-full bg-gradient-to-tr from-cyan-600 to-indigo-600 flex items-center justify-center font-bold text-base text-white ring-2 ring-cyan-500/30">
+            A$
+          </div>
+          <div class="leading-tight">
+            <h4 class="font-bold text-sm text-white">Ashish Mahato</h4>
+            <span class="text-[11px] text-cyan-400 font-mono">Creator Pro License</span>
+          </div>
+        </div>
+
+        <!-- System Stats / AI Render Engine -->
+        <div class="space-y-3">
+          <h5 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Engine Performance</h5>
+          
+          <div class="bg-gray-950 p-3 rounded-lg border border-gray-800/80 space-y-2 text-xs">
+            <div class="flex justify-between">
+              <span class="text-gray-400">Render Device:</span>
+              <span class="text-gray-200">Hardware Acceleration</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Export Encoder:</span>
+              <span class="text-cyan-400 font-mono">NVENC / H.264</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-400">Auto Captions:</span>
+              <span class="text-emerald-400">Whisper-v3 Active</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Render Target Presets -->
+        <div class="space-y-3">
+          <h5 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Output Preset</h5>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <button class="p-2.5 rounded-lg border border-cyan-500/80 bg-cyan-950/30 text-center font-medium text-cyan-300">
+              <i class="fa-solid fa-mobile-screen block mb-1 text-sm"></i> 9:16 Shorts
+            </button>
+            <button class="p-2.5 rounded-lg border border-gray-800 bg-gray-950 hover:border-gray-700 text-center font-medium text-gray-400">
+              <i class="fa-solid fa-desktop block mb-1 text-sm"></i> 16:9 Landscape
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Bottom Quick Logout / Settings -->
+      <div class="pt-4 border-t border-gray-800 flex justify-between text-xs text-gray-400">
+        <button class="hover:text-white transition flex items-center gap-1.5">
+          <i class="fa-solid fa-gear"></i> Preferences
+        </button>
+        <button class="hover:text-red-400 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-power-off"></i> Exit
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const video = document.getElementById('preview-video');
+    const playIcon = document.getElementById('play-icon');
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+
+    function togglePlay() {
+      if (video.paused) {
+        video.play();
+        playIcon.classList.replace('fa-play', 'fa-pause');
+      } else {
+        video.pause();
+        playIcon.classList.replace('fa-pause', 'fa-play');
+      }
+    }
+
+    function sendQuickPrompt(promptText) {
+      userInput.value = promptText;
+      handleChatSubmit(new Event('submit'));
+    }
+
+    function handleChatSubmit(e) {
+      e.preventDefault();
+      const message = userInput.value.trim();
+      if (!message) return;
+
+      // Append User Message
+      const userBubble = `
+        <div class="flex justify-end">
+          <div class="bg-cyan-600 text-white p-3 rounded-2xl rounded-tr-sm text-xs max-w-[85%] shadow-md">
+            ${message}
+          </div>
+        </div>
+      `;
+      chatBox.insertAdjacentHTML('beforeend', userBubble);
+      userInput.value = '';
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      // Simulate AI Processing & Structured Payload Return
+      setTimeout(() => {
+        const aiBubble = `
+          <div class="flex gap-3">
+            <div class="h-8 w-8 rounded-full bg-cyan-600 flex items-center justify-center text-xs shrink-0 font-bold">
+              AI
+            </div>
+            <div class="space-y-2 max-w-[85%]">
+              <div class="bg-gray-800 border border-gray-700/80 p-3 rounded-2xl rounded-tl-sm text-xs text-gray-200">
+                <p class="font-medium text-emerald-400 mb-1">⚡ Timeline Updated Successfully!</p>
+                <p class="text-gray-300">Command decode ho gaya hai. Frame rates aur effects align kar diye gaye hain:</p>
+                
+                <pre class="bg-gray-950 p-2.5 rounded-lg border border-gray-800 font-mono text-[11px] text-cyan-300 mt-2 overflow-x-auto">
+{
+  "action": "execute_pipeline",
+  "status": "applied",
+  "filters": ["edge_glow", "cinematic_contrast"],
+  "audio_ducking": true,
+  "render_quality": "1080p_60fps"
+}</pre>
+              </div>
+            </div>
+          </div>
+        `;
+        chatBox.insertAdjacentHTML('beforeend', aiBubble);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 700);
+    }
+
+    function clearChat() {
+      chatBox.innerHTML = `
+        <div class="flex gap-3">
+          <div class="h-8 w-8 rounded-full bg-cyan-600 flex items-center justify-center text-xs shrink-0 font-bold">AI</div>
+          <div class="space-y-2 max-w-[85%]">
+            <div class="bg-gray-800/90 border border-gray-700/70 p-3.5 rounded-2xl rounded-tl-sm text-gray-200 text-xs">
+              <p class="font-semibold text-cyan-400 mb-1">Taskora Ready!</p>
+              <p>Workspace fresh kar diya gaya hai. Agli instruction dein.</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
